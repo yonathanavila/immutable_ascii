@@ -19,7 +19,7 @@ export default function MintPage() {
 
     const contract = getContractInstance();
 
-    await contract.write.mint([]);
+    await contract.write.mint({ account: address as `0x${string}` });
   }
 
   // 3D Card Hover Effect State

@@ -1,4 +1,10 @@
-import { createWalletClient, custom, getContract } from "viem";
+import {
+  createPublicClient,
+  createWalletClient,
+  custom,
+  getContract,
+  http,
+} from "viem";
 import { base } from "viem/chains";
 import { getProvider } from "./coinbase";
 
@@ -12,11 +18,17 @@ const NFT_ABI = [
   },
 ] as const;
 
+// Public client (READ-ONLY blockchain access)
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http(),
+});
+
 export function getContractInstance() {
   const provider = getProvider();
 
   if (!provider) {
-    throw new Error("Provider not available");
+    throw new Error("Provider not available (must be in browser)");
   }
 
   const walletClient = createWalletClient({
@@ -27,6 +39,9 @@ export function getContractInstance() {
   return getContract({
     address: "0x5952a90311e8031B49e611E3bf91af4e7738D1e2",
     abi: NFT_ABI,
-    client: walletClient,
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
   });
 }
