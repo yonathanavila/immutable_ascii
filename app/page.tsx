@@ -62,7 +62,7 @@ export default function MintPage() {
     <main className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-between p-6">
       {/* Navbar Header */}
       <header className="w-full max-w-5xl flex justify-between items-center py-4 border-b border-slate-800">
-        <h1 className="text-2xl font-black tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-black tracking-wider bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
           IMMUNABLE ASCII NFT
         </h1>
 
