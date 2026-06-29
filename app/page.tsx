@@ -2,31 +2,25 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  useConnect,
-  useConnection,
-  useDisconnect,
-  useWriteContract,
-} from "wagmi";
 
-// Mock ABI for an ERC721 Mint function
-const NFT_ABI = [
-  {
-    type: "function",
-    name: "mint",
-    inputs: [],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-] as const;
-
-const CONTRACT_ADDRESS = "0x5952a90311e8031B49e611E3bf91af4e7738D1e2";
+import { getContractInstance } from "@/app/lib/contract";
+import { connectWallet } from "@/app/lib/wallet";
 
 export default function MintPage() {
-  const { address, isConnected } = useConnection();
-  const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
-  const { writeContract, isPending } = useWriteContract();
+  const [address, setAddress] = useState<string>();
+
+  async function connect() {
+    const addr = await connectWallet();
+    setAddress(addr);
+  }
+
+  async function mint() {
+    if (!address) return;
+
+    const contract = getContractInstance();
+
+    await contract.write.mint([]);
+  }
 
   // 3D Card Hover Effect State
   const [rotateX, setRotateX] = useState(0);
@@ -48,16 +42,6 @@ export default function MintPage() {
     setRotateY(0);
   };
 
-  const handleMint = () => {
-    if (!isConnected) return;
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: NFT_ABI,
-      functionName: "mint",
-      args: [],
-    });
-  };
-
   return (
     <main className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-between p-6">
       {/* Navbar Header */}
@@ -67,28 +51,22 @@ export default function MintPage() {
         </h1>
 
         <div>
-          {isConnected ? (
+          {address ? (
             <div className="flex items-center gap-4">
               <span className="badge badge-info badge-outline p-4 font-mono">
                 {address?.slice(0, 6)}...{address?.slice(-4)}
               </span>
               <button
-                onClick={() => disconnect()}
                 className="btn btn-error btn-sm btn-outline"
+                onClick={() => setAddress(undefined)}
               >
                 Disconnect
               </button>
             </div>
           ) : (
-            connectors.map((connector) => (
-              <button
-                key={connector.uid}
-                onClick={() => connect({ connector })}
-                className="btn btn-primary"
-              >
-                Connect Wallet
-              </button>
-            ))
+            <button onClick={connect} className="btn btn-primary">
+              Connect Wallet
+            </button>
           )}
         </div>
       </header>
@@ -155,17 +133,10 @@ export default function MintPage() {
             <div className="absolute -inset-1.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
 
             <button
-              onClick={handleMint}
-              disabled={!isConnected || isPending}
+              onClick={mint}
               className="relative w-full btn btn-lg bg-slate-950 border border-slate-800 hover:bg-slate-900 text-white font-bold tracking-wide  disabled:bg-slate-800 disabled:text-slate-500"
             >
-              {isPending ? (
-                <span className="loading loading-spinner"></span>
-              ) : !isConnected ? (
-                "Connect Wallet to Mint"
-              ) : (
-                "MINT NFT"
-              )}
+              {!address ? "Connect Wallet to Mint" : "MINT NFT"}
             </button>
           </div>
         </div>
