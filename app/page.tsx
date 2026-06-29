@@ -2,7 +2,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useConnection, useDisconnect, useWriteContract } from "wagmi";
+import {
+  useConnect,
+  useConnection,
+  useDisconnect,
+  useWriteContract,
+} from "wagmi";
 
 // Mock ABI for an ERC721 Mint function
 const NFT_ABI = [
